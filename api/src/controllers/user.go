@@ -68,7 +68,7 @@ func SearchAllUsers(w http.ResponseWriter, r *http.Request) {
 // e execulta função que busca usuario com id no BD
 func SearchUser(w http.ResponseWriter, r *http.Request) {
 	parameter := mux.Vars(r)
-	ID, erro := strconv.ParseUint(parameter["id"], 10, 32)
+	ID, erro := strconv.ParseUint(parameter["userID"], 10, 32)
 	if erro != nil {
 		w.Write([]byte(fmt.Sprintf("Erro ao converter parametro para inteiro!:%s", erro)))
 		return
@@ -78,6 +78,7 @@ func SearchUser(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("Erro ao conecar ao Banco!:%s", erro)))
 		return
 	}
+	defer db.Close()
 	repository := repositories.NewRepositoryUser(db)
 	user, erro := repository.SearchUser(ID)
 	if erro != nil {
@@ -91,10 +92,11 @@ func SearchUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// UptadeUser atualiza os dados do usuário registrado no BD com ID informado no parâmetro
+// UptadeUser lê o id informado por parametros, conecta o banco,
+// e execulta função que atualiza os dados do usuário com id registrado no BD
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	parameter := mux.Vars(r)
-	ID, erro := strconv.ParseUint(parameter["id"], 10, 32)
+	ID, erro := strconv.ParseUint(parameter["userID"], 10, 32)
 	if erro != nil {
 		w.Write([]byte(fmt.Sprintf("Erro ao converter parametro para inteiro!:%s", erro)))
 		return
@@ -124,10 +126,11 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("Atualizando usuário com ID %d com sucesso!", ID)))
 }
 
-// DeleteUser deleta o usuário registrado no BD com ID informado no parâmetro
+// DeleteUser lê o id informado por parametro, conecta o banco,
+// e execulta função que deleta o usuário registrado com id no BD
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	parameter := mux.Vars(r)
-	ID, erro := strconv.ParseUint(parameter["id"], 10, 32)
+	ID, erro := strconv.ParseUint(parameter["userID"], 10, 32)
 	if erro != nil {
 		w.Write([]byte(fmt.Sprintf("Erro ao converter parametro para inteiro!:%s", erro)))
 		return
@@ -144,6 +147,5 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("Erro no processo de exclusão do user do banco!:%s", erro)))
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
 	w.Write([]byte(fmt.Sprintf("Deletado usuário com ID %d com sucesso!", ID)))
 }
