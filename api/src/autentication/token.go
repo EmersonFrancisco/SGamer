@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt"
 )
 
 // NewToken cria um token com as permissões para o usuario após login
