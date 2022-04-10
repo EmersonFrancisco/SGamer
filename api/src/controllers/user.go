@@ -4,11 +4,12 @@ import (
 	"api/src/banco"
 	"api/src/models"
 	"api/src/repositories"
+	"api/src/response"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -18,134 +19,134 @@ import (
 func NewUser(w http.ResponseWriter, r *http.Request) {
 	bodyRequest, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao ler Request!:%s", erro)))
+		response.Erro(w, http.StatusUnprocessableEntity, erro)
 		return
 	}
-
 	var user models.User
 	if erro = json.Unmarshal(bodyRequest, &user); erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao converter Json para user!:%s", erro)))
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	if erro = user.Prepare("register"); erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
 	db, erro := banco.Conect()
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao conectar com banco!:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
 	defer db.Close()
 
 	repository := repositories.NewRepositoryUser(db)
-	userId, erro := repository.Create(user)
+	user.ID, erro = repository.Create(user)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro durante a criação do user no Banco!:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	w.Write([]byte(fmt.Sprintf("Criando novo usuário com ID: %d", userId)))
+	response.JSON(w, http.StatusCreated, user)
 }
 
-// SeachAllUsers conecta o banco, e execulta função que busca todos os usuários registrados no BD
-func SearchAllUsers(w http.ResponseWriter, r *http.Request) {
+// SeachAllUsers lê o filtro informado no request conecta o banco,
+// e execulta função que busca os usuários que responde ao filtro no BD
+func SearchFilterUsers(w http.ResponseWriter, r *http.Request) {
+	filter := strings.ToLower(r.URL.Query().Get("user"))
 	db, erro := banco.Conect()
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao conectar ao Banco!:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
 	defer db.Close()
 	repository := repositories.NewRepositoryUser(db)
-	users, erro := repository.SearchAllUsers()
+	users, erro := repository.SearchFilter(filter)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro durante a busca dos users no Banco:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	if erro := json.NewEncoder(w).Encode(users); erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao converter user para Json!:%s", erro)))
-		return
-	}
+	response.JSON(w, http.StatusOK, users)
 }
 
 // SearchUser lê o id informado por parametro, conecta o banco,
 // e execulta função que busca usuario com id no BD
 func SearchUser(w http.ResponseWriter, r *http.Request) {
 	parameter := mux.Vars(r)
-	ID, erro := strconv.ParseUint(parameter["userID"], 10, 32)
+	ID, erro := strconv.ParseUint(parameter["userID"], 10, 64)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao converter parametro para inteiro!:%s", erro)))
+		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
 	db, erro := banco.Conect()
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao conecar ao Banco!:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
 	defer db.Close()
 	repository := repositories.NewRepositoryUser(db)
-	user, erro := repository.SearchUser(ID)
+	user, erro := repository.Search(ID)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro durante a buscar do user no Banco:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	if erro := json.NewEncoder(w).Encode(user); erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao converter user para Json!:%s", erro)))
-		return
-	}
+	response.JSON(w, http.StatusOK, user)
 }
 
 // UptadeUser lê o id informado por parametros, conecta o banco,
 // e execulta função que atualiza os dados do usuário com id registrado no BD
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	parameter := mux.Vars(r)
-	ID, erro := strconv.ParseUint(parameter["userID"], 10, 32)
+	ID, erro := strconv.ParseUint(parameter["userID"], 10, 64)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao converter parametro para inteiro!:%s", erro)))
+		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
 	bodyRequest, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao ler Request!:%s", erro)))
+		response.Erro(w, http.StatusUnprocessableEntity, erro)
 		return
 	}
 	var user models.User
 	if erro = json.Unmarshal(bodyRequest, &user); erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao converter Json para user!:%s", erro)))
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	if erro = user.Prepare("update"); erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
 	db, erro := banco.Conect()
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao conectar com banco!:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
 	defer db.Close()
 	repository := repositories.NewRepositoryUser(db)
-	erro = repository.UpdateUser(uint64(ID), user)
+	erro = repository.Update(ID, user)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao efetuar atualização do user!:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	w.Write([]byte(fmt.Sprintf("Atualizando usuário com ID %d com sucesso!", ID)))
+	response.JSON(w, http.StatusNoContent, nil)
 }
 
 // DeleteUser lê o id informado por parametro, conecta o banco,
 // e execulta função que deleta o usuário registrado com id no BD
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	parameter := mux.Vars(r)
-	ID, erro := strconv.ParseUint(parameter["userID"], 10, 32)
+	ID, erro := strconv.ParseUint(parameter["userID"], 10, 64)
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao converter parametro para inteiro!:%s", erro)))
+		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
 	db, erro := banco.Conect()
 	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro ao conectar com banco!:%s", erro)))
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
 	defer db.Close()
 	repository := repositories.NewRepositoryUser(db)
-	erro = repository.DeleteUser(uint64(ID))
-	if erro != nil {
-		w.Write([]byte(fmt.Sprintf("Erro no processo de exclusão do user do banco!:%s", erro)))
+	if erro = repository.Delete(ID); erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	w.Write([]byte(fmt.Sprintf("Deletado usuário com ID %d com sucesso!", ID)))
+	response.JSON(w, http.StatusNoContent, nil)
 }

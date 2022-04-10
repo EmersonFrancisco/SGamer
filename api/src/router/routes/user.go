@@ -15,25 +15,25 @@ var userRoute = []Route{
 	{
 		Uri:                   "/user",
 		Method:                http.MethodGet,
-		Funcion:               controllers.SearchAllUsers,
-		RequiresAutentication: false,
+		Funcion:               controllers.SearchFilterUsers,
+		RequiresAutentication: true,
 	},
 	{
 		Uri:                   "/user/{userID}",
 		Method:                http.MethodGet,
 		Funcion:               controllers.SearchUser,
-		RequiresAutentication: false,
+		RequiresAutentication: true,
 	},
 	{
 		Uri:                   "/user/{userID}",
 		Method:                http.MethodPut,
 		Funcion:               controllers.UpdateUser,
-		RequiresAutentication: false,
+		RequiresAutentication: true,
 	},
 	{
 		Uri:                   "/user/{userID}",
 		Method:                http.MethodDelete,
 		Funcion:               controllers.DeleteUser,
-		RequiresAutentication: false,
+		RequiresAutentication: true,
 	},
 }

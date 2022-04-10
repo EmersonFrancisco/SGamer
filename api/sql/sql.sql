@@ -8,6 +8,6 @@ CREATE TABLE user(
     username varchar(50) not null,
     nick varchar(50) not null unique,
     email varchar(50) not null unique,
-    pass varchar(20) not null,
+    pass varchar(200) not null,
     createDate timestamp default current_timestamp()
 ) ENGINE=INNODB;
