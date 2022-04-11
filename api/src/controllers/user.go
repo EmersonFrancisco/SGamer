@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"api/src/autentication"
 	"api/src/banco"
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/response"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -99,6 +101,13 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
+	idUserToken, erro := autentication.ExtractIdUser(r)
+	if erro != nil {
+		response.Erro(w, http.StatusUnauthorized, erro)
+	}
+	if ID != idUserToken {
+		response.Erro(w, http.StatusForbidden, errors.New("Não permitido atualizar outro usuario, sem ser o seu."))
+	}
 	bodyRequest, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
 		response.Erro(w, http.StatusUnprocessableEntity, erro)
@@ -136,6 +145,13 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if erro != nil {
 		response.Erro(w, http.StatusBadRequest, erro)
 		return
+	}
+	idUserToken, erro := autentication.ExtractIdUser(r)
+	if erro != nil {
+		response.Erro(w, http.StatusUnauthorized, erro)
+	}
+	if ID != idUserToken {
+		response.Erro(w, http.StatusForbidden, errors.New("Não permitido deletar outro usuario, sem ser o seu."))
 	}
 	db, erro := banco.Conect()
 	if erro != nil {
