@@ -49,9 +49,15 @@ var userRoute = []Route{
 		RequiresAutentication: true,
 	},
 	{
-		Uri:                   "/user/{userID}/followers", // user id é o id do usuario a ser seguido
+		Uri:                   "/user/{userID}/followers", // user id é o id do usuario que é seguido
 		Method:                http.MethodGet,
 		Funcion:               controllers.SearchFollowers,
+		RequiresAutentication: true,
+	},
+	{
+		Uri:                   "/user/{userID}/following", // user id é o id do usuario que segue
+		Method:                http.MethodGet,
+		Funcion:               controllers.SearchFollowing,
 		RequiresAutentication: true,
 	},
 }

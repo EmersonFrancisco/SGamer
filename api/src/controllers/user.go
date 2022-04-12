@@ -227,7 +227,7 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // SearchFollower lê a ID do parametro, conecta no banco,
-// e execulta função que retorna todos seguidores que esse usuário tem
+// e execulta função que retorna todos usuários que segue esse ID
 func SearchFollowers(w http.ResponseWriter, r *http.Request) {
 	parameter := mux.Vars(r)
 	userId, erro := strconv.ParseUint(parameter["userID"], 10, 64)
@@ -248,4 +248,28 @@ func SearchFollowers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.JSON(w, http.StatusOK, followers)
+}
+
+// SearchFollower lê a ID do parametro, conecta no banco,
+// e execulta função que retorna todos usuários que esse ID segue
+func SearchFollowing(w http.ResponseWriter, r *http.Request) {
+	parameter := mux.Vars(r)
+	userId, erro := strconv.ParseUint(parameter["userID"], 10, 64)
+	if erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	db, erro := database.Conect()
+	if erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+	repository := repositories.NewRepositoryUser(db)
+	users, erro := repository.SearchFollowing(userId)
+	if erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	response.JSON(w, http.StatusOK, users)
 }

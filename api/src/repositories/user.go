@@ -3,7 +3,6 @@ package repositories
 import (
 	"api/src/models"
 	"database/sql"
-	"errors"
 	"fmt"
 )
 
@@ -73,11 +72,6 @@ func (repository users) Search(id uint64) (models.User, error) {
 			return user, erro
 		}
 	}
-	if user.ID == 0 {
-		erro = errors.New(fmt.Sprintf("Nenhum user encontrado no banco com id %d", id))
-		return user, erro
-	}
-
 	return user, nil
 }
 
@@ -177,8 +171,8 @@ func (repository users) Unfollow(userId, followerUserId uint64) error {
 	return nil
 }
 
+// SearchFollowers busca os usuarios que seguem o ID informado
 func (repository users) SearchFollowers(id uint64) ([]models.User, error) {
-	var users []models.User
 	lines, erro := repository.db.Query(`
 		select u.id, u.username, u.nick, u.email, u.createdate 
 		from user u inner join follower f on u.id = f.follower_id where f.user_id = ?`, id,
@@ -187,20 +181,40 @@ func (repository users) SearchFollowers(id uint64) ([]models.User, error) {
 	// mas com uma condições que o usuario seguido seja o ID que desejamos...
 	)
 	if erro != nil {
-		return users, erro
+		return nil, erro
 	}
-	var user models.User
+	var users []models.User
 	defer lines.Close()
 	for lines.Next() {
+		var user models.User
 		if erro := lines.Scan(&user.ID, &user.Username, &user.Nick, &user.Email, &user.CreateDate); erro != nil {
-			return users, erro
+			return nil, erro
 		}
 		users = append(users, user)
 	}
-	if id == 0 {
-		erro = errors.New(fmt.Sprintf("Nenhum user encontrado no banco com id %d", id))
-		return users, erro
-	}
+	return users, nil
+}
 
+// SearchFollowme busca os usuarios que o ID informado segue
+func (repository users) SearchFollowing(id uint64) ([]models.User, error) {
+	lines, erro := repository.db.Query(`
+		select u.id, u.username, u.nick, u.email, u.createdate 
+		from user u inner join follower f on u.id = f.user_id where f.follower_id = ?`, id,
+	// foi unido a tabela user e follower, e busca os dados do usuario que o ID(usuario)
+	// seja igual ao USER_ID(seguidor)
+	// mas com uma condições que o usuario seja seguido pelo o ID que desejamos...
+	)
+	if erro != nil {
+		return nil, erro
+	}
+	var users []models.User
+	defer lines.Close()
+	for lines.Next() {
+		var user models.User
+		if erro := lines.Scan(&user.ID, &user.Username, &user.Nick, &user.Email, &user.CreateDate); erro != nil {
+			return nil, erro
+		}
+		users = append(users, user)
+	}
 	return users, nil
 }
