@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"api/src/autentication"
-	"api/src/banco"
+	"api/src/database"
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/response"
@@ -26,7 +26,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, erro := banco.Conect()
+	db, erro := database.Conect()
 	if erro != nil {
 		response.Erro(w, http.StatusInternalServerError, erro)
 		return

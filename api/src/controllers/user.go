@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"api/src/autentication"
-	"api/src/banco"
+	"api/src/database"
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/response"
@@ -33,7 +33,7 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
-	db, erro := banco.Conect()
+	db, erro := database.Conect()
 	if erro != nil {
 		response.Erro(w, http.StatusInternalServerError, erro)
 		return
@@ -53,7 +53,7 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 // e execulta função que busca os usuários que responde ao filtro no BD
 func SearchFilterUsers(w http.ResponseWriter, r *http.Request) {
 	filter := strings.ToLower(r.URL.Query().Get("user"))
-	db, erro := banco.Conect()
+	db, erro := database.Conect()
 	if erro != nil {
 		response.Erro(w, http.StatusInternalServerError, erro)
 		return
@@ -77,7 +77,7 @@ func SearchUser(w http.ResponseWriter, r *http.Request) {
 		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
-	db, erro := banco.Conect()
+	db, erro := database.Conect()
 	if erro != nil {
 		response.Erro(w, http.StatusInternalServerError, erro)
 		return
@@ -122,7 +122,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
-	db, erro := banco.Conect()
+	db, erro := database.Conect()
 	if erro != nil {
 		response.Erro(w, http.StatusInternalServerError, erro)
 		return
@@ -152,8 +152,9 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	if ID != idUserToken {
 		response.Erro(w, http.StatusForbidden, errors.New("Não permitido deletar outro usuario, sem ser o seu."))
+		return
 	}
-	db, erro := banco.Conect()
+	db, erro := database.Conect()
 	if erro != nil {
 		response.Erro(w, http.StatusInternalServerError, erro)
 		return
@@ -165,4 +166,86 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.JSON(w, http.StatusNoContent, nil)
+}
+
+// FollowUser lê o ID do usuario logado, e o ID no parametro, conecta no banco
+// e execulta funcção que faça que um usuario siga outro
+func FollowUser(w http.ResponseWriter, r *http.Request) {
+	followerUserID, erro := autentication.ExtractIdUser(r)
+	if erro != nil {
+		response.Erro(w, http.StatusUnauthorized, erro)
+	}
+	parameter := mux.Vars(r)
+	userId, erro := strconv.ParseUint(parameter["userID"], 10, 64)
+	if erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	if followerUserID == userId {
+		response.Erro(w, http.StatusForbidden, errors.New("Não permitido seguir seu próprio usuário."))
+		return
+	}
+	db, erro := database.Conect()
+	if erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+	repository := repositories.NewRepositoryUser(db)
+	if erro = repository.Follow(userId, followerUserID); erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	response.JSON(w, http.StatusNoContent, nil)
+}
+
+// UnfollowUser lê o ID do usuario logado, e o ID no parametro, conecta no banco
+// e execulta funcção que faça que um usuario pare de seguir outro
+func UnfollowUser(w http.ResponseWriter, r *http.Request) {
+	followerUserID, erro := autentication.ExtractIdUser(r)
+	if erro != nil {
+		response.Erro(w, http.StatusUnauthorized, erro)
+	}
+	parameter := mux.Vars(r)
+	userId, erro := strconv.ParseUint(parameter["userID"], 10, 64)
+	if erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	db, erro := database.Conect()
+	if erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+	repository := repositories.NewRepositoryUser(db)
+	if erro = repository.Unfollow(userId, followerUserID); erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	response.JSON(w, http.StatusNoContent, nil)
+}
+
+// SearchFollower lê a ID do parametro, conecta no banco,
+// e execulta função que retorna todos seguidores que esse usuário tem
+func SearchFollowers(w http.ResponseWriter, r *http.Request) {
+	parameter := mux.Vars(r)
+	userId, erro := strconv.ParseUint(parameter["userID"], 10, 64)
+	if erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	db, erro := database.Conect()
+	if erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+	repository := repositories.NewRepositoryUser(db)
+	followers, erro := repository.SearchFollowers(userId)
+	if erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	response.JSON(w, http.StatusOK, followers)
 }

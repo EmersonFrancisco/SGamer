@@ -146,3 +146,61 @@ func (repository users) SearchEmail(email string) (models.User, error) {
 	}
 	return user, nil
 }
+
+// Follow permite que um usuário siga outro
+func (repository users) Follow(userId, followerUserId uint64) error {
+	statement, erro := repository.db.Prepare(
+		"insert ignore into follower(user_id, follower_id) values (?, ?)")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+	_, erro = statement.Exec(userId, followerUserId)
+	if erro != nil {
+		return erro
+	}
+	return nil
+}
+
+// Unfollow permite que um usuário pare de seguir o outro
+func (repository users) Unfollow(userId, followerUserId uint64) error {
+	statement, erro := repository.db.Prepare(
+		"delete from follower where user_id = ? and follower_id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+	_, erro = statement.Exec(userId, followerUserId)
+	if erro != nil {
+		return erro
+	}
+	return nil
+}
+
+func (repository users) SearchFollowers(id uint64) ([]models.User, error) {
+	var users []models.User
+	lines, erro := repository.db.Query(`
+		select u.id, u.username, u.nick, u.email, u.createdate 
+		from user u inner join follower f on u.id = f.follower_id where f.user_id = ?`, id,
+	// foi unido a tabela user e follower, e busca os dados do usuario que o user.id(usuario)
+	// seja igual ao FOLLOWER_ID(seguidor)
+	// mas com uma condições que o usuario seguido seja o ID que desejamos...
+	)
+	if erro != nil {
+		return users, erro
+	}
+	var user models.User
+	defer lines.Close()
+	for lines.Next() {
+		if erro := lines.Scan(&user.ID, &user.Username, &user.Nick, &user.Email, &user.CreateDate); erro != nil {
+			return users, erro
+		}
+		users = append(users, user)
+	}
+	if id == 0 {
+		erro = errors.New(fmt.Sprintf("Nenhum user encontrado no banco com id %d", id))
+		return users, erro
+	}
+
+	return users, nil
+}
