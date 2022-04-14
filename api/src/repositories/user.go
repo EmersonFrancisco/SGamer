@@ -218,3 +218,19 @@ func (repository users) SearchFollowing(id uint64) ([]models.User, error) {
 	}
 	return users, nil
 }
+
+// SearchPass busca a senha do ID informado
+func (repository users) SearchPass(id uint64) (string, error) {
+	var user models.User
+	line, erro := repository.db.Query("select pass from user where id = ?", id)
+	if erro != nil {
+		return "", erro
+	}
+	defer line.Close()
+	if line.Next() {
+		if erro = line.Scan(&user.Pass); erro != nil {
+			return "", erro
+		}
+	}
+	return user.Pass, nil
+}

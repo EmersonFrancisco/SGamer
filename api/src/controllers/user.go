@@ -8,6 +8,7 @@ import (
 	"api/src/response"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -21,12 +22,12 @@ import (
 func NewUser(w http.ResponseWriter, r *http.Request) {
 	bodyRequest, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
-		response.Erro(w, http.StatusUnprocessableEntity, erro)
+		response.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
 	var user models.User
 	if erro = json.Unmarshal(bodyRequest, &user); erro != nil {
-		response.Erro(w, http.StatusBadRequest, erro)
+		response.Erro(w, http.StatusUnprocessableEntity, erro)
 		return
 	}
 	if erro = user.Prepare("register"); erro != nil {
@@ -272,4 +273,44 @@ func SearchFollowing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.JSON(w, http.StatusOK, users)
+}
+
+func UpdatePass(w http.ResponseWriter, r *http.Request) {
+	userIdToken, erro := autentication.ExtractIdUser(r)
+	if erro != nil {
+		response.Erro(w, http.StatusUnauthorized, erro)
+	}
+	parameter := mux.Vars(r)
+	userId, erro := strconv.ParseUint(parameter["userID"], 10, 64)
+	if erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	if userId != userIdToken {
+		response.Erro(w, http.StatusForbidden, errors.New("Só é permitida a alteração do seu próprio usuário!"))
+		return
+	}
+	bodyRequest, erro := ioutil.ReadAll(r.Body)
+	if erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	var pass models.Pass
+	if erro = json.Unmarshal(bodyRequest, &pass); erro != nil {
+		response.Erro(w, http.StatusUnprocessableEntity, erro)
+		return
+	}
+	db, erro := database.Conect()
+	if erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+	repository := repositories.NewRepositoryUser(db)
+	passDataBase, erro := repository.SearchPass(userId)
+	if erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	fmt.Println(passDataBase)
 }
