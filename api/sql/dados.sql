@@ -10,7 +10,7 @@ values
 (3, 1),
 (1, 3);
 
-insert into post(title, content, author_id)
+insert into post(title, content, authorid)
 values
 ("Publicação do Usuário 1", "Essa é a publicação do usuário 1! Oba!", 1),
 ("Publicação do Usuário 2", "Essa é a publicação do usuário 2! Oba!", 2),
