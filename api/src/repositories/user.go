@@ -234,3 +234,18 @@ func (repository users) SearchPass(id uint64) (string, error) {
 	}
 	return user.Pass, nil
 }
+
+// UpdatePass altera a senha do usuario no banco
+func (repository users) UpdatePass(id uint64, passHash string) error {
+	statement, erro := repository.db.Prepare(
+		"update user set pass = ? where id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+	if _, erro := statement.Exec(passHash, id); erro != nil {
+		return erro
+	}
+
+	return nil
+}

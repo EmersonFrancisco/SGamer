@@ -6,9 +6,9 @@ import (
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/response"
+	"api/src/security"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -275,6 +275,8 @@ func SearchFollowing(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusOK, users)
 }
 
+//	UpdatePass verifica ID do usuario logado, lê ID do parametro, conecta no banco
+// e execulta processor de validação e segurança para alteração da senha do usuário
 func UpdatePass(w http.ResponseWriter, r *http.Request) {
 	userIdToken, erro := autentication.ExtractIdUser(r)
 	if erro != nil {
@@ -312,5 +314,21 @@ func UpdatePass(w http.ResponseWriter, r *http.Request) {
 		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	fmt.Println(passDataBase)
+	if erro = security.ValidadePass(pass.Current, passDataBase); erro != nil {
+		response.Erro(w, http.StatusUnauthorized, errors.New("A senha atual informada é inválida!"))
+		return
+	}
+	passHash, erro := security.Hash(pass.New)
+	if erro != nil {
+		response.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if erro = repository.UpdatePass(userId, string(passHash)); erro != nil {
+		response.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	response.JSON(w, http.StatusNoContent, nil)
+
 }
