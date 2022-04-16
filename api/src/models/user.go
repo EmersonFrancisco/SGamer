@@ -21,18 +21,18 @@ type User struct {
 
 // Prepare vai chamar as funções para validade e formatar o usuario recebido
 func (user *User) Prepare(stage string) error {
-	if stage == "register" {
-		if erro := user.validated(); erro != nil {
-			return erro
-		}
+
+	if erro := user.validated(stage); erro != nil {
+		return erro
 	}
+
 	if erro := user.format(stage); erro != nil {
 		return erro
 	}
 	return nil
 }
 
-func (user *User) validated() error {
+func (user *User) validated(stage string) error {
 
 	switch {
 	case user.Username == "":
@@ -41,8 +41,11 @@ func (user *User) validated() error {
 		return errors.New("O Nick é obrigatorio e não pode estar em branco")
 	case user.Email == "":
 		return errors.New("O Email é obrigatorio e não pode estar em branco")
-	case user.Pass == "":
-		return errors.New("O Pass é obrigatorio e não pode estar em branco")
+	}
+	if stage == "register" {
+		if user.Pass == "" {
+			return errors.New("O Pass é obrigatorio e não pode estar em branco")
+		}
 	}
 	return nil
 }

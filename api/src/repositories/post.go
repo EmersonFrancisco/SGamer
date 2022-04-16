@@ -34,7 +34,7 @@ func (repository posts) Create(post models.Post) (uint64, error) {
 	return uint64(IdInsert), nil
 }
 
-// SeachId tras uma unica publicação do banco de dados de acordo com ID
+// SeachId traz uma unica publicação do banco de dados de acordo com ID
 func (repository posts) SearchId(id uint64) (models.Post, error) {
 	var post models.Post
 	line, erro := repository.db.Query(`
@@ -60,7 +60,8 @@ func (repository posts) SearchId(id uint64) (models.Post, error) {
 	return post, nil
 }
 
-func (repository posts) SearchAll(id uint64) ([]models.Post, error) {
+// SearchFeed traz as publicações do feed do usuario, com suas e as dos que segue
+func (repository posts) SearchFeed(id uint64) ([]models.Post, error) {
 	var posts []models.Post
 	lines, erro := repository.db.Query(`
 		select distinct p.*, u.nick from
@@ -88,4 +89,94 @@ func (repository posts) SearchAll(id uint64) ([]models.Post, error) {
 		posts = append(posts, post)
 	}
 	return posts, nil
+}
+
+// SearchUser traz as publicações de um usuário especifico
+func (repository posts) SearchByUser(id uint64) ([]models.Post, error) {
+	lines, erro := repository.db.Query(`
+		select p.*, u.nick from
+		post p inner join user u
+		on u.id = p.authorid where p.authorid = ?`, id,
+	)
+	if erro != nil {
+		return nil, erro
+	}
+	var posts []models.Post
+	for lines.Next() {
+		var post models.Post
+		if erro = lines.Scan(
+			&post.Id,
+			&post.Title,
+			&post.Content,
+			&post.AuthorId,
+			&post.Likes,
+			&post.DatePost,
+			&post.AuthorNick); erro != nil {
+			return nil, erro
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
+}
+
+// UpdatePost efetua a alteração dos dados da publicação
+func (repository posts) Update(postAlter models.Post, id uint64) error {
+	statement, erro := repository.db.Prepare(
+		"update post set title = ?, content = ? where id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+	_, erro = statement.Exec(postAlter.Title, postAlter.Content, id)
+	if erro != nil {
+		return erro
+	}
+	return nil
+}
+
+func (repository posts) Delete(id uint64) error {
+	statement, erro := repository.db.Prepare(
+		"delete from post where id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+	_, erro = statement.Exec(id)
+	if erro != nil {
+		return erro
+	}
+	return nil
+}
+
+func (repository posts) Like(id uint64) error {
+	statement, erro := repository.db.Prepare(
+		"update post set likes = likes + 1 where id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+	_, erro = statement.Exec(id)
+	if erro != nil {
+		return erro
+	}
+	return nil
+}
+
+func (repository posts) Unlike(id uint64) error {
+	statement, erro := repository.db.Prepare(`
+			UPDATE post SET likes = 
+			CASE 
+				WHEN likes > 0 
+					THEN likes - 1 
+				ELSE 0 
+			END WHERE id = ?`)
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+	_, erro = statement.Exec(id)
+	if erro != nil {
+		return erro
+	}
+	return nil
 }

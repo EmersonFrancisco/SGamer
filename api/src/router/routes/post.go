@@ -16,7 +16,7 @@ var routesPost = []Route{
 	{
 		Uri:                   "/post",
 		Method:                http.MethodGet,
-		Funcion:               controllers.SearchAllPost,
+		Funcion:               controllers.SearchFeedPost,
 		RequiresAutentication: true,
 	},
 
@@ -24,6 +24,13 @@ var routesPost = []Route{
 		Uri:                   "/post/{postId}",
 		Method:                http.MethodGet,
 		Funcion:               controllers.SearchPost,
+		RequiresAutentication: true,
+	},
+
+	{
+		Uri:                   "/user/{userId}/post",
+		Method:                http.MethodGet,
+		Funcion:               controllers.SearchUserPost,
 		RequiresAutentication: true,
 	},
 
@@ -38,6 +45,20 @@ var routesPost = []Route{
 		Uri:                   "/post/{postId}",
 		Method:                http.MethodDelete,
 		Funcion:               controllers.DeletePost,
+		RequiresAutentication: true,
+	},
+
+	{
+		Uri:                   "/post/{postId}/like",
+		Method:                http.MethodPost,
+		Funcion:               controllers.LikePost,
+		RequiresAutentication: true,
+	},
+
+	{
+		Uri:                   "/post/{postId}/unlike",
+		Method:                http.MethodPost,
+		Funcion:               controllers.UnlikePost,
 		RequiresAutentication: true,
 	},
 }

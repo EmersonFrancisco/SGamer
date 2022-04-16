@@ -78,27 +78,13 @@ func (repository users) Search(id uint64) (models.User, error) {
 // UpdateUser verifica a existencia de usuário com id no banco
 // e atualiza dados do usuário no banco com id informado
 func (repository users) Update(id uint64, userReq models.User) error {
-	userDB, erro := repository.Search(id)
-	if erro != nil {
-		return erro
-	}
-	if userReq.Username != "" {
-		userDB.Username = userReq.Username
-	}
-	if userReq.Nick != "" {
-		userDB.Nick = userReq.Nick
-	}
-	if userReq.Email != "" {
-		userDB.Email = userReq.Email
-	}
-
 	statement, erro := repository.db.Prepare(
 		"update user set username = ?, nick = ?, email = ? where id = ?")
 	if erro != nil {
 		return erro
 	}
 	defer statement.Close()
-	if _, erro := statement.Exec(userDB.Username, userDB.Nick, userDB.Email, id); erro != nil {
+	if _, erro := statement.Exec(userReq.Username, userReq.Nick, userReq.Email, id); erro != nil {
 		return erro
 	}
 
