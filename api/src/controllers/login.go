@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 // Login é resposavel por efetuar login de um usuario
@@ -45,5 +46,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		response.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	w.Write([]byte(token))
+	userId := strconv.FormatUint(userDB.ID, 10)
+	response.JSON(w, http.StatusOK, models.AutenticationData{Id: userId, Token: token})
 }

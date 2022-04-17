@@ -11,7 +11,7 @@
 <body>
     <div class="container-login">
         <div>
-            <form class="sgamer-form" id="formulario-cadastro">
+            <form class="sgamer-form" id="registration-form">
                 <span>Crie a sua conta agora mesmo!</span>
                 <div>
                     <input type="text" name="username" id="username" placeholder="Digite o seu nome" required="required">
@@ -26,16 +26,15 @@
                     <input type="password" name="pass" id="pass" placeholder="Digite a sua senha" required="required">
                 </div>
                 <div>
-                    <input type="password" name="passConfirm" id="passConfirm" placeholder="Confirme a sua senha"
-                        required="required">
+                    <input type="password" name="passConfirm" id="passConfirm" placeholder="Confirme a sua senha" required="required">
                 </div>
                 <a href="/login"> Clique aqui para fazer o login </a>
                 <button type="submit" class="btn-sgamer">Cadastrar</button>
             </form>
         </div>
     </div>
-    {{ template "scripts" }}
-    <script src="/assets//js/cadastro.js"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/register.js"></script>
 </body>
 
 </html>

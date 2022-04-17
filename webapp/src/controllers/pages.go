@@ -14,3 +14,8 @@ func LoadScreenLogin(w http.ResponseWriter, r *http.Request) {
 func LoadScreenRegisterUser(w http.ResponseWriter, r *http.Request) {
 	utils.ExecuteTemplate(w, "registeruser.html", nil)
 }
+
+// LoadScreenNewUser vai renderizar a tela principal com as publicações
+func LoadScreenHome(w http.ResponseWriter, r *http.Request) {
+	utils.ExecuteTemplate(w, "home.html", nil)
+}
