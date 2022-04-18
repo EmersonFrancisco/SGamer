@@ -20,19 +20,16 @@ func Save(w http.ResponseWriter, id, token string) error {
 		"id":    id,
 		"token": token,
 	}
-
 	encodedDate, erro := s.Encode("data", data)
 	if erro != nil {
 		return erro
 	}
-
 	http.SetCookie(w, &http.Cookie{
-		Name:     "SecurityData",
+		Name:     "data",
 		Value:    encodedDate,
 		Path:     "/",
 		HttpOnly: true,
 	})
-
 	return nil
 }
 

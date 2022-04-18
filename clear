@@ -1,0 +1,147 @@
+[33mcommit 4c5996a54d8f1093caf0d6d80c7683b5f1c44782[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Sun Apr 17 11:17:06 2022 -0300
+
+    Update Project SGamer
+
+[33mcommit 9ef8729fbfbd5e594f6cfff3cac912177153c979[m
+Author: Emerson Francisco <herminhoo1@gmail.com>
+Date:   Sat Apr 16 11:38:39 2022 -0300
+
+    Update Project SGamer
+    
+    start of the web application part
+
+[33mcommit b3237a895883e4b6fbaeaab4601fff044ffa002c[m
+Author: Emerson Francisco <herminhoo1@gmail.com>
+Date:   Sat Apr 16 08:55:34 2022 -0300
+
+    remove comment
+
+[33mcommit c4b46335b3f2de2f41414da9d089c99aa2002f24[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Fri Apr 15 22:30:31 2022 -0300
+
+    CREATE LICENSE
+
+[33mcommit 647e7ddc83a0cfc6dc9a4c33afef13effaf2831a[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Fri Apr 15 22:08:48 2022 -0300
+
+    Update Project SGamer
+    
+    Fininsh API
+
+[33mcommit 3a0b73acc5ae98c0eb11c1cda936da75f7f945f4[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Fri Apr 15 00:49:22 2022 -0300
+
+    Update Project SGamer
+    
+    Create table Post, routes for tratament this table, and function CRUD in development
+
+[33mcommit dcc0103bb015b3ec1e94ba90e54e1090b9881cc7[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Thu Apr 14 21:58:34 2022 -0300
+
+    Update project SGamer
+    
+    Finish users tratament
+
+[33mcommit 92f850a60b0f84cf4e4f8ab6cdff7bfcedf59e30[m
+Author: Emerson Francisco <herminhoo1@gmail.com>
+Date:   Thu Apr 14 17:13:15 2022 -0300
+
+    update project SGamer
+    
+    create function to change password
+
+[33mcommit f1d17658057b6da431d69fd661105df1afa85310[m
+Author: Emerson Francisco <herminhoo1@gmail.com>
+Date:   Tue Apr 12 13:57:50 2022 -0300
+
+    update project SGamer
+    
+    create a function that searches for the following users
+
+[33mcommit dc56c53e5551d3be48f3e89d2b00c1a80dac9168[m
+Author: Emerson Francisco <herminhoo1@gmail.com>
+Date:   Tue Apr 12 13:15:15 2022 -0300
+
+    update project SGamer
+    
+    create function for follow, unfollow user, and schearch followers
+    
+    rename package "banco" for "database"
+
+[33mcommit 5bc6f6ed5a1a400094b304d7a1258aed84ad8cfa[m
+Author: Emerson Airton Francisco <herminhoo1@gmail.com>
+Date:   Mon Apr 11 12:51:55 2022 -0300
+
+    Update README.md
+
+[33mcommit e090c1be695418b215b79df7af97652ac930e57e[m
+Author: Emerson Airton Francisco <herminhoo1@gmail.com>
+Date:   Mon Apr 11 12:51:23 2022 -0300
+
+    Update README.md
+
+[33mcommit b2fcab731b62964b9b44232c1c33065ba47946c6[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Sun Apr 10 21:19:33 2022 -0300
+
+    update projetc SGamer
+
+[33mcommit 020fbce326c52f6a46c529d9acde0ce457435158[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Sun Apr 10 19:15:09 2022 -0300
+
+    Change Package JWT
+    
+    Changed JWT package, per recommendation if golang.com
+
+[33mcommit 3bc738050681d48fcf8c7679862238eeea19d0f7[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Sun Apr 10 18:57:41 2022 -0300
+
+    update project SGamer
+
+[33mcommit c7635cfdde61aeb6b3940156dd2516350383fc18[m[33m ([m[1;32mdevelop[m[33m)[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Sun Apr 10 14:13:10 2022 -0300
+
+    create package response
+    
+    create response package, for error tratament
+
+[33mcommit 5d40463aaec5d0811ba0288d5aae54a24cad8799[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Sun Apr 10 14:11:56 2022 -0300
+
+    update package controllers e repositoires com CRUD
+
+[33mcommit df6dab3c9f528300b226867daae09fc9ec95cefa[m
+Author: Emerson Francisco <herminhoo1@gmail.com>
+Date:   Sat Apr 9 10:33:42 2022 -0300
+
+    Update repositories e controllers CRUD user
+
+[33mcommit 1589bba1ed6e54a2272e4fd1d367b39aaa66b281[m
+Author: Emerson Franciscoo <emersonairton@hotmail.com>
+Date:   Fri Apr 8 22:15:55 2022 -0300
+
+    Update Project
+
+[33mcommit 83816a6d5cef682e2d6d4958d956122e5a11703f[m
+Author: Emerson Airton Francisco <herminhoo1@gmail.com>
+Date:   Fri Apr 8 14:03:01 2022 -0300
+
+    Create README.md
+
+[33mcommit 9a2194853a5e298570803b5babecf5ccc6b67ce8[m
+Author: Emerson Francisco <herminhoo1@gmail.com>
+Date:   Fri Apr 8 13:33:58 2022 -0300
+
+    Create Project SGamer
+    
+    iniciando projeto SGamer

@@ -17,8 +17,7 @@ func Logger(nextFunction http.HandlerFunc) http.HandlerFunc {
 // Authentication verifica a existencia de dados nos Cookies
 func Authentication(nextFunction http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, erro := cookies.Read(r)
-		if erro != nil {
+		if _, erro := cookies.Read(r); erro != nil {
 			http.Redirect(w, r, "/login", 302)
 			return
 		}
