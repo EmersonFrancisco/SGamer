@@ -10,9 +10,7 @@ function unFollow(evento) {
         url: `/user/${userId}/unfollow`,
         method: "POST",
     }).done(function() {
-        Swal.fire('Sucesso', 'deixou de seguir com sucesso!', 'success').then(function() {
-            window.location = userId;
-        })
+        window.location = userId;
     }).fail(function() {
         Swal.fire('Opps....', 'erro ao deixar de seguir usuário!', 'error');
     }).always(function() {
@@ -31,9 +29,7 @@ function follow(evento) {
         method: "POST",
 
     }).done(function() {
-        Swal.fire('Sucesso', 'Usuário seguido com sucesso!', 'success').then(function() {
-            window.location = userId;
-        })
+        window.location = userId;
     }).fail(function() {
         Swal.fire('Opps....', 'erro ao seguir usuário!', 'error');
     }).always(function() {
