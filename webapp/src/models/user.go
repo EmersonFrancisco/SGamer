@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -53,6 +54,18 @@ func SearchCompleteUser(userId uint64, r *http.Request) (User, error) {
 	user.Following = <-*&chFollowing
 	user.Posts = <-*&chPosts
 	wg.Wait()
+	if user.Id == 0 {
+		return user, errors.New("Erro ao buscar o Usuario")
+	}
+	if user.Followers == nil {
+		return user, errors.New("Erro ao buscar o Seguidores")
+	}
+	if user.Following == nil {
+		return user, errors.New("Erro ao buscar os que segue")
+	}
+	if user.Posts == nil {
+		return user, errors.New("Erro ao buscar as publicações")
+	}
 	return user, nil
 }
 
@@ -90,6 +103,10 @@ func SearchFollowers(chFollowers *chan []User, userId uint64, r *http.Request) {
 		*chFollowers <- nil
 		return
 	}
+	if users == nil {
+		*chFollowers <- make([]User, 0)
+		return
+	}
 	*chFollowers <- users
 }
 
@@ -109,6 +126,11 @@ func SearchFollowing(chFollowing *chan []User, userId uint64, r *http.Request) {
 		*chFollowing <- nil
 		return
 	}
+
+	if users == nil {
+		*chFollowing <- make([]User, 0)
+		return
+	}
 	*chFollowing <- users
 }
 
@@ -125,6 +147,11 @@ func SearchPosts(chPosts *chan []Post, userId uint64, r *http.Request) {
 	var posts []Post
 	if erro = json.NewDecoder(resp.Body).Decode(&posts); erro != nil {
 		*chPosts <- nil
+		return
+	}
+
+	if posts == nil {
+		*chPosts <- make([]Post, 0)
 		return
 	}
 
