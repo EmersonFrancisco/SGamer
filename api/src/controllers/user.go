@@ -9,6 +9,7 @@ import (
 	"api/src/security"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -54,6 +55,7 @@ func NewUser(w http.ResponseWriter, r *http.Request) {
 // e execulta função que busca os usuários que responde ao filtro no BD
 func SearchFilterUsers(w http.ResponseWriter, r *http.Request) {
 	filter := strings.ToLower(r.URL.Query().Get("user"))
+	fmt.Println(filter)
 	db, erro := database.Conect()
 	if erro != nil {
 		response.Erro(w, http.StatusInternalServerError, erro)

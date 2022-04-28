@@ -17,6 +17,12 @@ a:hover {
     text-decoration: none;
 }
 
+a:link {
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    position: relative;
+}
+
 input {
     outline: none;
     border: none;
@@ -50,6 +56,10 @@ input::placeholder {
     border-radius: 10px;
     position: relative;
     padding: 50px 0 90px 0;
+}
+
+.sgamerBody {
+    background-color: #8f8fa1;
 }
 
 .sgamer-form>span {

@@ -41,6 +41,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		response.JSON(w, http.StatusUnprocessableEntity, response.ErroAPI{Erro: erro.Error()})
 		return
 	}
-	response.JSON(w, http.StatusOK, nil)
+	response.JSON(w, http.StatusNoContent, nil)
 
 }

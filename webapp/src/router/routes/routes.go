@@ -20,6 +20,8 @@ func Config(router *mux.Router) *mux.Router {
 	routes := routeLogin
 	routes = append(routes, routesUser...)
 	routes = append(routes, routeHome)
+	routes = append(routes, routePost...)
+	routes = append(routes, routeLogout)
 
 	for _, route := range routes {
 		if route.RequiresAuthentication {
